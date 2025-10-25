@@ -11,6 +11,7 @@ def download_active_files_for_ids(client, config, download_dir):
 
     updated = []
     total_downloaded = 0
+    total_errors = 0
 
     for item in config:
         folder_id = item["id"]
@@ -23,12 +24,16 @@ def download_active_files_for_ids(client, config, download_dir):
         new_item["src_md"] = ""
         new_item["src_sm"] = ""
         new_item["load"] = False
+        new_item["error"] = None  # champ pour stocker une erreur éventuelle
 
         try:
             files = client.list(folder_path)
             if not files:
-                print("   ⚠️ Dossier vide ou inaccessible.")
+                msg = "Dossier vide ou inaccessible."
+                print(f"   ⚠️ {msg}")
+                new_item["error"] = msg
                 updated.append(new_item)
+                total_errors += 1
                 continue
 
             active_files = [
@@ -37,7 +42,9 @@ def download_active_files_for_ids(client, config, download_dir):
             ]
 
             if not active_files:
-                print("   ⚠️ Aucun fichier 'active' trouvé.")
+                msg = "Aucun fichier 'active' trouvé."
+                print(f"   ⚠️ {msg}")
+                new_item["error"] = msg
                 updated.append(new_item)
                 continue
 
@@ -67,7 +74,10 @@ def download_active_files_for_ids(client, config, download_dir):
                 total_downloaded += 1
 
         except Exception as e:
-            print(f"   ❌ Erreur pour {folder_id} : {e}")
+            error_msg = str(e)
+            print(f"   ❌ Erreur pour {folder_id} : {error_msg}")
+            new_item["error"] = error_msg
+            total_errors += 1
 
         # Ajouter la version mise à jour à la liste finale
         updated.append(new_item)
@@ -78,4 +88,4 @@ def download_active_files_for_ids(client, config, download_dir):
         json.dump(updated, f, ensure_ascii=False, indent=2)
 
     print(f"\n✅ Fichier JSON mis à jour : {output_json}")
-    print(f"📦 {len(updated)} dossiers traités — {total_downloaded} fichiers téléchargés.")
+    print(f"📦 {len(updated)} dossiers traités — {total_downloaded} fichiers téléchargés — {total_errors} erreurs.")
