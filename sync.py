@@ -1,6 +1,9 @@
 from webdav3.client import Client
 from dotenv import load_dotenv
 import os
+import shutil
+
+from webdav_utils import download_active_files  # ← fonction externe
 
 load_dotenv()
 
@@ -11,22 +14,29 @@ options = {
 }
 
 client = Client(options)
-
 download_dir = os.getenv("DOWNLOAD_DIR", "cdn")
+
+# 🧹 Nettoyage du dossier local
+if os.path.exists(download_dir):
+    print(f"🧹 Suppression du contenu de '{download_dir}'…")
+    shutil.rmtree(download_dir)
 os.makedirs(download_dir, exist_ok=True)
 
-try:
-    print("📡 Connexion à Framaspace…")
-    files = client.list()  # racine
-    print("✅ Connexion réussie !")
+print("📡 Connexion à Framaspace…")
+items = client.list()
+print("✅ Connexion réussie !")
 
-    for f in files:
-        if not f.endswith("/"):
-            local_path = os.path.join(download_dir, os.path.basename(f))
-            print(f"⬇️ Téléchargement de {f} → {local_path}")
-            client.download_sync(remote_path=f, local_path=local_path)
+# Ignorer le dossier courant (souvent premier élément)
+folders = [item for item in items[1:] if item.endswith("/")]
 
-    print(f"✅ Tous les fichiers ont été téléchargés dans '{download_dir}'")
+if not folders:
+    print("⚠️ Aucun dossier trouvé.")
+else:
+    print(f"📁 {len(folders)} dossier(s) trouvé(s) :")
+    for d in folders:
+        print(f" - {d}")
 
-except Exception as e:
-    print(f"❌ Erreur : {e}")
+    print("\n🔍 Recherche et téléchargement des fichiers 'active'...\n")
+    download_active_files(client, folders, download_dir)
+
+    print(f"\n✅ Téléchargements terminés dans '{download_dir}'.")
