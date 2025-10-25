@@ -4,10 +4,11 @@
     "title": "",
     "active": true,
     "type": "cdn",
-    "src": "md",
+    "src": "header.md",
     "src_md": "",
     "src_sm": "",
     "load": true,
+    "filetype": "md",
     "error": null
   },
   {
@@ -15,10 +16,11 @@
     "title": "A propos",
     "active": true,
     "type": "cdn",
-    "src": "png",
+    "src": "about.png",
     "src_md": "",
-    "src_sm": "png",
+    "src_sm": "about_sm.png",
     "load": true,
+    "filetype": "png",
     "error": null
   },
   {
@@ -30,6 +32,7 @@
     "src_md": "",
     "src_sm": "",
     "load": false,
+    "filetype": "",
     "error": "Remote resource: /truc/ not found"
   }
 ]
