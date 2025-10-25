@@ -2,7 +2,7 @@ from webdav3.client import Client
 from dotenv import load_dotenv
 import os
 
-# Charger les variables du .env
+# Charger les variables d'environnement
 load_dotenv()
 
 options = {
@@ -13,12 +13,22 @@ options = {
 
 client = Client(options)
 
+# Récupérer le dossier de destination depuis le .env
+download_dir = os.getenv("DOWNLOAD_DIR", "downloads")
+os.makedirs(download_dir, exist_ok=True)
+
 try:
     print("📡 Connexion à Framaspace…")
     files = client.list()  # racine
     print("✅ Connexion réussie !")
-    print("📂 Contenu du dossier racine :")
+
     for f in files:
-        print(" -", f)
+        if not f.endswith("/"):  # ignorer les dossiers
+            local_path = os.path.join(download_dir, os.path.basename(f))
+            print(f"⬇️ Téléchargement de {f} → {local_path}")
+            client.download_sync(remote_path=f, local_path=local_path)
+
+    print(f"✅ Tous les fichiers ont été téléchargés dans '{download_dir}'")
+
 except Exception as e:
     print(f"❌ Erreur : {e}")
