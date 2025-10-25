@@ -3,8 +3,7 @@ from dotenv import load_dotenv
 import os
 import shutil
 
-from webdav_utils import download_active_files  # ← fonction externe
-
+from webdav_utils import download_active_files
 load_dotenv()
 
 options = {
