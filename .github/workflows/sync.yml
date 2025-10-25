@@ -24,7 +24,7 @@ jobs:
           WEBDAV_LOGIN: ${{ secrets.WEBDAV_LOGIN }}
           WEBDAV_PASSWORD: ${{ secrets.WEBDAV_PASSWORD }}
           DOWNLOAD_DIR: cdn
-        run: python sync.py
+        run: python run.py
 
       - name: Publish to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
