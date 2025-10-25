@@ -2,3 +2,7 @@
 .env
 .vscode
 active
+
+# Python
+__pycache__/
+*.pyc
