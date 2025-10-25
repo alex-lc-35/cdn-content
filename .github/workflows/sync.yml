@@ -1,17 +1,11 @@
-name: Sync WebDAV Files
+name: Sync WebDAV Files and Publish
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # Lancer manuellement
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    env:
-      WEBDAV_HOSTNAME: ${{ secrets.WEBDAV_HOSTNAME }}
-      WEBDAV_LOGIN: ${{ secrets.WEBDAV_LOGIN }}
-      WEBDAV_PASSWORD: ${{ secrets.WEBDAV_PASSWORD }}
-      DOWNLOAD_DIR: active
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,4 +19,15 @@ jobs:
         run: pip install webdavclient3 python-dotenv
 
       - name: Run sync script
+        env:
+          WEBDAV_HOSTNAME: ${{ secrets.WEBDAV_HOSTNAME }}
+          WEBDAV_LOGIN: ${{ secrets.WEBDAV_LOGIN }}
+          WEBDAV_PASSWORD: ${{ secrets.WEBDAV_PASSWORD }}
+          DOWNLOAD_DIR: cdn
         run: python sync.py
+
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./cdn

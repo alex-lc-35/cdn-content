@@ -2,7 +2,6 @@ from webdav3.client import Client
 from dotenv import load_dotenv
 import os
 
-# Charger les variables d'environnement
 load_dotenv()
 
 options = {
@@ -13,8 +12,7 @@ options = {
 
 client = Client(options)
 
-# Récupérer le dossier de destination depuis le .env
-download_dir = os.getenv("DOWNLOAD_DIR", "downloads")
+download_dir = os.getenv("DOWNLOAD_DIR", "cdn")
 os.makedirs(download_dir, exist_ok=True)
 
 try:
@@ -23,7 +21,7 @@ try:
     print("✅ Connexion réussie !")
 
     for f in files:
-        if not f.endswith("/"):  # ignorer les dossiers
+        if not f.endswith("/"):
             local_path = os.path.join(download_dir, os.path.basename(f))
             print(f"⬇️ Téléchargement de {f} → {local_path}")
             client.download_sync(remote_path=f, local_path=local_path)
