@@ -18,13 +18,14 @@ def download_active_files_for_ids(client, config, download_dir):
         folder_path = f"{folder_id.strip('/')}/"
         print(f"\n📂 Dossier : {folder_path}")
 
-        # Copie de l'objet pour le JSON final
+        # Copie de base pour le JSON final
         new_item = item.copy()
         new_item["src"] = ""
         new_item["src_md"] = ""
         new_item["src_sm"] = ""
         new_item["load"] = False
-        new_item["error"] = None  # champ pour stocker une erreur éventuelle
+        new_item["filetype"] = ""
+        new_item["error"] = None
 
         try:
             files = client.list(folder_path)
@@ -32,8 +33,8 @@ def download_active_files_for_ids(client, config, download_dir):
                 msg = "Dossier vide ou inaccessible."
                 print(f"   ⚠️ {msg}")
                 new_item["error"] = msg
-                updated.append(new_item)
                 total_errors += 1
+                updated.append(new_item)
                 continue
 
             active_files = [
@@ -69,7 +70,9 @@ def download_active_files_for_ids(client, config, download_dir):
                 print(f"   ⬇️ Téléchargement de {remote_path} → {local_path}")
                 client.download_sync(remote_path=remote_path, local_path=local_path)
 
-                new_item[key] = ext
+                # ✅ On écrit le chemin complet + le type d'extension
+                new_item[key] = new_name
+                new_item["filetype"] = ext
                 new_item["load"] = True
                 total_downloaded += 1
 
@@ -79,7 +82,6 @@ def download_active_files_for_ids(client, config, download_dir):
             new_item["error"] = error_msg
             total_errors += 1
 
-        # Ajouter la version mise à jour à la liste finale
         updated.append(new_item)
 
     # 💾 Écriture finale dans le dossier de téléchargement
