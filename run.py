@@ -1,20 +1,18 @@
 from webdav_client import get_client
 from init import load_initial_json
-from webdave import download_active_files_for_ids
+from webdav_utils import download_active_files_for_ids
 import os
 
-# Chargement du JSON
-config = load_initial_json("data.json")
+# Chargement du JSON original
+json_path = "data.json"
+config = load_initial_json(json_path)
 
-# Création du client
+# Création du client WebDAV
 client = get_client()
 
 # Préparer le dossier local
 download_dir = os.getenv("DOWNLOAD_DIR", "cdn")
 os.makedirs(download_dir, exist_ok=True)
 
-# Extraire les IDs
-ids = [item["id"] for item in config]
-
-# Télécharger les fichiers actifs
-download_active_files_for_ids(client, ids, download_dir)
+# Lancer le processus complet
+download_active_files_for_ids(client, config, download_dir)
