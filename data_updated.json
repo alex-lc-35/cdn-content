@@ -4,11 +4,11 @@
     "title": "",
     "active": true,
     "type": "cdn",
-    "src": "header.md",
+    "src": "header.79c699.html",
     "src_md": "",
-    "src_sm": "",
+    "src_sm": "header_sm.2ed46c.html",
     "load": true,
-    "filetype": "md",
+    "filetype": "html",
     "error": null
   },
   {
@@ -16,9 +16,9 @@
     "title": "A propos",
     "active": true,
     "type": "cdn",
-    "src": "about.png",
+    "src": "about.829fbe.png",
     "src_md": "",
-    "src_sm": "about_sm.png",
+    "src_sm": "about_sm.c20c2b.png",
     "load": true,
     "filetype": "png",
     "error": null
