@@ -1,7 +1,7 @@
 name: Sync WebDAV Files and Publish
 
 on:
-  workflow_dispatch:  # Lancer manuellement
+  workflow_dispatch:
 
 jobs:
   sync:
@@ -16,7 +16,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install webdavclient3 python-dotenv
+        run: pip install -r requirements.txt
 
       - name: Run sync script
         env:
