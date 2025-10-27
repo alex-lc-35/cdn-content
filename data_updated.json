@@ -24,6 +24,18 @@
     "error": null
   },
   {
+    "id": "contact",
+    "title": "",
+    "active": true,
+    "type": "cdn",
+    "src": "contact.bd6804.html",
+    "src_md": "",
+    "src_sm": "",
+    "load": true,
+    "filetype": "html",
+    "error": null
+  },
+  {
     "id": "truc",
     "title": "Un truc",
     "active": true,
