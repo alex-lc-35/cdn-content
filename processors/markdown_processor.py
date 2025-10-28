@@ -26,6 +26,7 @@ class MarkdownProcessor(BaseProcessor):
 
             # Nettoyage du fichier source temporaire
             os.remove(src_path)
+            
 
             return html_temp, "html"
 

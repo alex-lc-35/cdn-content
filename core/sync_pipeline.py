@@ -6,6 +6,7 @@ from core.naming import normalize_id, detect_key, final_name
 from webdav.repo import list_folder, get_info, download_file
 from processors import get_processor_for
 
+
 def sync_active_files(client, config, download_dir):
     print("\n🔍 Synchronisation des fichiers actifs...")
     previous_data = load_previous(download_dir)
@@ -61,12 +62,16 @@ def sync_active_files(client, config, download_dir):
 
             temp_path, ext = processor.process(temp_path, download_dir, folder_id, suffix, ext)
 
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print(temp_path, download_dir, folder_id, suffix, ext)
+
             # Nom final et déplacement
             final = final_name(folder_id, suffix, etag, lastmod, ext)
             shutil.move(temp_path, os.path.join(download_dir, final))
 
             # Mise à jour
             new_item[key] = final
+            new_item["filetype"] = ext
             new_item["meta"][key] = {"etag": etag, "lastmod": lastmod}
             new_item["load"] = True
             total_downloaded += 1
