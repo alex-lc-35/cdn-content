@@ -1,40 +1,92 @@
+""" webdav_utils.py """
 import os
 import json
 import shutil
 from markdonw_transformer import convert_md_file_to_html
 
 
+# ============================================================
+# 🔹 Utilitaires de base
+# ============================================================
+
+def load_previous_data(download_dir):
+    """Charge le JSON précédent s'il existe."""
+    path = os.path.join(download_dir, "data_updated.json")
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+
+def get_previous_item(folder_id, previous_data):
+    """Récupère l'ancien item correspondant à un dossier donné."""
+    return next((i for i in previous_data if i["id"].strip("/") == folder_id), None)
+
+
+def get_active_files(client, folder_path):
+    """Retourne la liste des fichiers 'active' dans un dossier WebDAV."""
+    files = client.list(folder_path)
+    if not files:
+        return [], "Dossier vide ou inaccessible."
+    active = [f for f in files if not f.endswith("/") and f.lower().startswith("active")]
+    if not active:
+        return [], "Aucun fichier 'active' trouvé."
+    return active, None
+
+
+def download_and_process_file(client, remote_path, download_dir, ext):
+    """Télécharge un fichier, convertit s'il est Markdown, et retourne son chemin final."""
+    temp_path = os.path.join(download_dir, f"__temp.{ext}")
+    client.download_sync(remote_path=remote_path, local_path=temp_path)
+
+    if ext == "md":
+        html_temp = os.path.join(download_dir, "__temp.html")
+        convert_md_file_to_html(temp_path, html_temp)
+        os.remove(temp_path)
+        ext = "html"
+        temp_path = html_temp
+
+    return temp_path, ext
+
+
+def build_final_name(folder_id, suffix, etag, lastmod, ext):
+    """Construit un nom de fichier final basé sur etag ou lastmod."""
+    etag_clean = (etag or "").replace('"', '').replace(":", "").replace("/", "")
+    if not etag_clean and lastmod:
+        etag_clean = lastmod.replace(",", "").replace(" ", "_").replace(":", "-")
+    if not etag_clean:
+        etag_clean = "noetag"
+    return f"{folder_id}{suffix}.{etag_clean}.{ext}"
+
+
+def update_item_with_file(new_item, key, final_name, etag, lastmod, ext):
+    """Met à jour les métadonnées d'un item avec un fichier téléchargé."""
+    new_item[key] = final_name
+    new_item["filetype"] = ext
+    new_item["load"] = True
+    new_item.setdefault("meta", {})[key] = {"etag": etag, "lastmod": lastmod}
+
+
+# ============================================================
+# 🔸 Fonction principale
+# ============================================================
+
 def download_active_files_for_ids(client, config, download_dir):
-    """
-    Télécharge les fichiers active / active_md / active_sm pour chaque dossier.
-    Évite les téléchargements inutiles grâce à la comparaison etag / lastmod.
-    Renomme les fichiers selon leur etag (ou date de modification si manquant).
-    """
     print("\n🔍 Téléchargement des fichiers 'active' pour chaque dossier :")
 
     updated = []
     total_downloaded = 0
     total_errors = 0
+    previous_data = load_previous_data(download_dir)
 
-    # 🔹 Charger le JSON précédent s'il existe
-    output_json = os.path.join(download_dir, "data_updated.json")
-    if os.path.exists(output_json):
-        with open(output_json, "r", encoding="utf-8") as f:
-            previous_data = json.load(f)
-    else:
-        previous_data = []
-
-    # 🔸 Boucle principale
     for item in config:
         folder_id = item["id"].strip("/")
         folder_path = f"{folder_id}/"
         print(f"\n📂 Dossier : {folder_path}")
 
-        # 🔍 Récupérer la version précédente du même dossier (si elle existe)
-        previous_item = next((i for i in previous_data if i["id"].strip("/") == folder_id), None)
+        previous_item = get_previous_item(folder_id, previous_data)
         previous_meta = (previous_item.get("meta") or {}) if previous_item else {}
 
-        # 🆕 Créer le nouvel item (en gardant les anciens meta s’il y en a)
         new_item = (previous_item.copy() if previous_item else item.copy())
         new_item.update({
             "src": "",
@@ -47,41 +99,28 @@ def download_active_files_for_ids(client, config, download_dir):
         })
 
         try:
-            files = client.list(folder_path)
-            if not files:
-                msg = "Dossier vide ou inaccessible."
-                print(f"   ⚠️ {msg}")
-                new_item["error"] = msg
+            active_files, error = get_active_files(client, folder_path)
+            if error:
+                print(f"   ⚠️ {error}")
+                new_item["error"] = error
                 total_errors += 1
                 updated.append(new_item)
                 continue
 
-            active_files = [f for f in files if not f.endswith("/") and f.lower().startswith("active")]
-            if not active_files:
-                msg = "Aucun fichier 'active' trouvé."
-                print(f"   ⚠️ {msg}")
-                new_item["error"] = msg
-                updated.append(new_item)
-                continue
-
-            # 🔁 Boucle sur chaque fichier "active"
             for f in active_files:
                 base_name = os.path.basename(f)
                 ext = os.path.splitext(base_name)[1].lstrip(".").lower()
                 remote_path = f"{folder_path}{f}".replace("//", "/")
 
-                # 🧠 Déterminer le suffixe et la clé JSON
+                # 🔹 Déterminer le suffixe
                 if base_name.startswith("active_sm"):
-                    suffix = "_sm"
-                    key = "src_sm"
+                    suffix, key = "_sm", "src_sm"
                 elif base_name.startswith("active_md"):
-                    suffix = "_md"
-                    key = "src_md"
+                    suffix, key = "_md", "src_md"
                 else:
-                    suffix = ""
-                    key = "src"
+                    suffix, key = "", "src"
 
-                # 🔎 Métadonnées distantes
+                # 🔹 Métadonnées distantes
                 info = client.info(remote_path)
                 etag = (info.get("etag") or "").replace('"', "")
                 lastmod = (info.get("modified") or "").replace("+0000", "GMT").strip()
@@ -92,7 +131,7 @@ def download_active_files_for_ids(client, config, download_dir):
 
                 print(f"DEBUG {base_name}: prev={prev_etag!r}, new={etag!r}")
 
-                # 🔍 Vérification inchangé
+                # 🔸 Vérification inchangé
                 if prev_etag and prev_etag == etag:
                     print(f"   ⏩ {base_name} inchangé (etag identique)")
                     continue
@@ -100,35 +139,17 @@ def download_active_files_for_ids(client, config, download_dir):
                     print(f"   ⏩ {base_name} inchangé (lastmod identique)")
                     continue
 
-                # 🆕 Téléchargement nécessaire
+                # 🔹 Téléchargement nécessaire
                 print(f"   ⬇️ Téléchargement de {base_name}")
-                temp_path = os.path.join(download_dir, f"__temp.{ext}")
-                client.download_sync(remote_path=remote_path, local_path=temp_path)
+                temp_path, ext = download_and_process_file(client, remote_path, download_dir, ext)
 
-                # 🪄 Conversion Markdown → HTML
-                if ext == "md":
-                    html_temp = os.path.join(download_dir, "__temp.html")
-                    convert_md_file_to_html(temp_path, html_temp)
-                    os.remove(temp_path)
-                    ext = "html"
-                    temp_path = html_temp
-
-                # 🏁 Nom final basé sur l’etag ou la date
-                etag_clean = etag.replace(":", "").replace("/", "")
-                if not etag_clean and lastmod:
-                    etag_clean = lastmod.replace(",", "").replace(" ", "_").replace(":", "-")
-                if not etag_clean:
-                    etag_clean = "noetag"
-
-                final_name = f"{folder_id}{suffix}.{etag_clean}.{ext}"
+                # 🔹 Nom final
+                final_name = build_final_name(folder_id, suffix, etag, lastmod, ext)
                 final_path = os.path.join(download_dir, final_name)
                 shutil.move(temp_path, final_path)
 
-                # 📦 Mise à jour de l’item
-                new_item[key] = final_name
-                new_item["filetype"] = ext
-                new_item["load"] = True
-                new_item["meta"][key] = {"etag": etag, "lastmod": lastmod}
+                # 🔹 Mise à jour de l'item
+                update_item_with_file(new_item, key, final_name, etag, lastmod, ext)
                 total_downloaded += 1
 
         except Exception as e:
@@ -139,7 +160,8 @@ def download_active_files_for_ids(client, config, download_dir):
 
         updated.append(new_item)
 
-    # 💾 Écriture du JSON final
+    # 💾 Sauvegarde finale
+    output_json = os.path.join(download_dir, "data_updated.json")
     with open(output_json, "w", encoding="utf-8") as f:
         json.dump(updated, f, ensure_ascii=False, indent=2)
 

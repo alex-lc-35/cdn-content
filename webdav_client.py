@@ -1,3 +1,4 @@
+""" webdav_client.py """
 import os
 from webdav3.client import Client
 from dotenv import load_dotenv

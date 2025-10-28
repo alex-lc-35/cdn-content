@@ -1,3 +1,4 @@
+""" init.py """
 import json
 
 def load_initial_json(json_path):
