@@ -18,7 +18,8 @@
         "etag": "68ffd9d768cc9",
         "lastmod": "Mon, 27 Oct 2025 20:45:11 GMT"
       }
-    }
+    },
+    "filetype": "html"
   },
   {
     "id": "about",
@@ -39,7 +40,8 @@
         "etag": "68f4b6c29015b",
         "lastmod": "Wed, 30 Apr 2025 09:00:33 GMT"
       }
-    }
+    },
+    "filetype": "png"
   },
   {
     "id": "contact",
@@ -56,7 +58,8 @@
         "etag": "68fff98287fd1",
         "lastmod": "Mon, 27 Oct 2025 23:00:18 GMT"
       }
-    }
+    },
+    "filetype": "html"
   },
   {
     "id": "truc",
