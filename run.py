@@ -1,19 +1,18 @@
 """ run.py """
-from webdav_client import get_client
-from init import load_initial_json
-from webdav_utils import download_active_files_for_ids
+
+from core.init_loader import load_initial_json
+from webdav.client import get_client
+from core.sync_pipeline import sync_active_files
+from core.state_store import ensure_dir
 import os
 
-# Chargement du JSON original
-json_path = "data.json"
-config = load_initial_json(json_path)
+def main():
+    config = load_initial_json("data.json")
+    client = get_client()
+    download_dir = os.getenv("DOWNLOAD_DIR", "cdn")
+    ensure_dir(download_dir)
+    sync_active_files(client, config, download_dir)
 
-# Création du client WebDAV
-client = get_client()
+if __name__ == "__main__":
+    main()
 
-# Préparer le dossier local
-download_dir = os.getenv("DOWNLOAD_DIR", "cdn")
-os.makedirs(download_dir, exist_ok=True)
-
-# Lancer le processus complet
-download_active_files_for_ids(client, config, download_dir)
