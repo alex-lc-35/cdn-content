@@ -26,11 +26,16 @@ def download_active_files_for_ids(client, config, download_dir):
 
     # 🔸 Boucle principale
     for item in config:
-        folder_id = item["id"]
-        folder_path = f"{folder_id.strip('/')}/"
+        folder_id = item["id"].strip("/")
+        folder_path = f"{folder_id}/"
         print(f"\n📂 Dossier : {folder_path}")
 
-        new_item = item.copy()
+        # 🔍 Récupérer la version précédente du même dossier (si elle existe)
+        previous_item = next((i for i in previous_data if i["id"].strip("/") == folder_id), None)
+        previous_meta = (previous_item.get("meta") or {}) if previous_item else {}
+
+        # 🆕 Créer le nouvel item (en gardant les anciens meta s’il y en a)
+        new_item = (previous_item.copy() if previous_item else item.copy())
         new_item.update({
             "src": "",
             "src_md": "",
@@ -38,7 +43,7 @@ def download_active_files_for_ids(client, config, download_dir):
             "load": False,
             "filetype": "",
             "error": None,
-            "meta": (previous_item.get("meta") or {}) if previous_item else {}
+            "meta": previous_meta.copy(),
         })
 
         try:
@@ -51,7 +56,6 @@ def download_active_files_for_ids(client, config, download_dir):
                 updated.append(new_item)
                 continue
 
-            # Liste des fichiers actifs
             active_files = [f for f in files if not f.endswith("/") and f.lower().startswith("active")]
             if not active_files:
                 msg = "Aucun fichier 'active' trouvé."
@@ -60,17 +64,13 @@ def download_active_files_for_ids(client, config, download_dir):
                 updated.append(new_item)
                 continue
 
-            # Ancien item du même dossier
-            previous_item = next((i for i in previous_data if i["id"] == folder_id), None)
-            previous_meta = previous_item.get("meta", {}) if previous_item else {}
-
-            # 🔁 Boucle sur chaque fichier actif
+            # 🔁 Boucle sur chaque fichier "active"
             for f in active_files:
                 base_name = os.path.basename(f)
                 ext = os.path.splitext(base_name)[1].lstrip(".").lower()
                 remote_path = f"{folder_path}{f}".replace("//", "/")
 
-                # 🧠 Déterminer suffixe et clé JSON
+                # 🧠 Déterminer le suffixe et la clé JSON
                 if base_name.startswith("active_sm"):
                     suffix = "_sm"
                     key = "src_sm"
@@ -83,8 +83,8 @@ def download_active_files_for_ids(client, config, download_dir):
 
                 # 🔎 Métadonnées distantes
                 info = client.info(remote_path)
-                etag = info.get("etag")
-                lastmod = info.get("modified")
+                etag = (info.get("etag") or "").replace('"', "")
+                lastmod = (info.get("modified") or "").replace("+0000", "GMT").strip()
 
                 prev_info = previous_meta.get(key, {})
                 prev_etag = prev_info.get("etag")
@@ -92,7 +92,7 @@ def download_active_files_for_ids(client, config, download_dir):
 
                 print(f"DEBUG {base_name}: prev={prev_etag!r}, new={etag!r}")
 
-                # 🔍 Vérification si inchangé
+                # 🔍 Vérification inchangé
                 if prev_etag and prev_etag == etag:
                     print(f"   ⏩ {base_name} inchangé (etag identique)")
                     continue
@@ -113,8 +113,8 @@ def download_active_files_for_ids(client, config, download_dir):
                     ext = "html"
                     temp_path = html_temp
 
-                # 🏁 Nom final basé sur l’etag ou fallback lastmod
-                etag_clean = (etag or "").replace('"', '').replace(":", "").replace("/", "")
+                # 🏁 Nom final basé sur l’etag ou la date
+                etag_clean = etag.replace(":", "").replace("/", "")
                 if not etag_clean and lastmod:
                     etag_clean = lastmod.replace(",", "").replace(" ", "_").replace(":", "-")
                 if not etag_clean:
@@ -124,7 +124,7 @@ def download_active_files_for_ids(client, config, download_dir):
                 final_path = os.path.join(download_dir, final_name)
                 shutil.move(temp_path, final_path)
 
-                # 📦 Enregistrement dans l’item
+                # 📦 Mise à jour de l’item
                 new_item[key] = final_name
                 new_item["filetype"] = ext
                 new_item["load"] = True
@@ -139,7 +139,7 @@ def download_active_files_for_ids(client, config, download_dir):
 
         updated.append(new_item)
 
-    # 💾 Écriture finale du JSON
+    # 💾 Écriture du JSON final
     with open(output_json, "w", encoding="utf-8") as f:
         json.dump(updated, f, ensure_ascii=False, indent=2)
 
