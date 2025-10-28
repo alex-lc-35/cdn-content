@@ -4,36 +4,59 @@
     "title": "",
     "active": true,
     "type": "cdn",
-    "src": "header.40ca16.html",
+    "src": "header.68ffece846e8d.html",
     "src_md": "",
-    "src_sm": "header_sm.2ed46c.html",
+    "src_sm": "header_sm.68ffd9d768cc9.html",
     "load": true,
-    "filetype": "html",
-    "error": null
+    "error": null,
+    "meta": {
+      "src": {
+        "etag": "68ffece846e8d",
+        "lastmod": "Mon, 27 Oct 2025 22:06:32 GMT"
+      },
+      "src_sm": {
+        "etag": "68ffd9d768cc9",
+        "lastmod": "Mon, 27 Oct 2025 20:45:11 GMT"
+      }
+    }
   },
   {
     "id": "about",
     "title": "A propos",
     "active": true,
     "type": "cdn",
-    "src": "about.829fbe.png",
+    "src": "about.68fcaa9a8756f.png",
     "src_md": "",
-    "src_sm": "about_sm.c20c2b.png",
+    "src_sm": "about_sm.68f4b6c29015b.png",
     "load": true,
-    "filetype": "png",
-    "error": null
+    "error": null,
+    "meta": {
+      "src": {
+        "etag": "68fcaa9a8756f",
+        "lastmod": "Wed, 30 Apr 2025 09:00:33 GMT"
+      },
+      "src_sm": {
+        "etag": "68f4b6c29015b",
+        "lastmod": "Wed, 30 Apr 2025 09:00:33 GMT"
+      }
+    }
   },
   {
     "id": "contact",
     "title": "",
     "active": true,
     "type": "cdn",
-    "src": "contact.d7f8cc.html",
+    "src": "contact.68fff98287fd1.html",
     "src_md": "",
     "src_sm": "",
     "load": true,
-    "filetype": "html",
-    "error": null
+    "error": null,
+    "meta": {
+      "src": {
+        "etag": "68fff98287fd1",
+        "lastmod": "Mon, 27 Oct 2025 23:00:18 GMT"
+      }
+    }
   },
   {
     "id": "truc",
@@ -44,7 +67,7 @@
     "src_md": "",
     "src_sm": "",
     "load": false,
-    "filetype": "",
-    "error": "Remote resource: /truc/ not found"
+    "error": "Remote resource: /truc/ not found",
+    "meta": {}
   }
 ]
