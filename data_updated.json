@@ -4,16 +4,12 @@
     "title": "",
     "active": true,
     "type": "cdn",
-    "src": "header.68ffece846e8d.html",
+    "src": "",
     "src_md": "",
     "src_sm": "header_sm.68ffd9d768cc9.html",
     "load": true,
-    "error": null,
+    "error": "Extension 'ods' non gérée.",
     "meta": {
-      "src": {
-        "etag": "68ffece846e8d",
-        "lastmod": "Mon, 27 Oct 2025 22:06:32 GMT"
-      },
       "src_sm": {
         "etag": "68ffd9d768cc9",
         "lastmod": "Mon, 27 Oct 2025 20:45:11 GMT"
