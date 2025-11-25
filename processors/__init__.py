@@ -3,6 +3,7 @@
 from .default_processor import DefaultProcessor
 from .markdown_processor import MarkdownProcessor
 from .image_processor import ImageProcessor
+from .ods_processor import OdsProcessor
 
 PROCESSORS = {
     "png": ImageProcessor(),
@@ -12,6 +13,7 @@ PROCESSORS = {
     "md": MarkdownProcessor(),
     "html": DefaultProcessor(),
     "htm": DefaultProcessor(),
+    "ods": OdsProcessor(),
 }
 
 def get_processor_for(ext):

@@ -38,5 +38,16 @@
     "src_md": "",
     "src_sm": "",
     "load": false
+  },
+  {
+    "id": "params",
+    "title": "params",
+    "active": true,
+    "type": "cdn",
+    "src": "",
+    "src_md": "",
+    "src_sm": "",
+    "load": false
   }
+
 ]
