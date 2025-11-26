@@ -25,33 +25,47 @@
     "order": 3,
     "id": "contact",
     "title": null,
-    "active": 0,
+    "active": 1,
     "type": "md",
     "link": null,
-    "load": false,
     "error": null,
-    "meta": {}
+    "meta": {
+      "src": {
+        "etag": "68fff98287fd1",
+        "lastmod": "Mon, 27 Oct 2025 23:00:18 GMT"
+      }
+    },
+    "load": true,
+    "src": "contact.68fff98287fd1.html",
+    "filetype": "html"
   },
   {
     "order": 4,
     "id": "event",
     "title": null,
-    "active": 0,
+    "active": 1,
     "type": "md",
     "link": null,
-    "load": false,
     "error": null,
-    "meta": {}
+    "meta": {
+      "src": {
+        "etag": "68fcbe90bf6d9",
+        "lastmod": "Sat, 25 Oct 2025 12:11:11 GMT"
+      }
+    },
+    "load": true,
+    "src": "event.68fcbe90bf6d9.html",
+    "filetype": "html"
   },
   {
     "order": 5,
     "id": "truc",
     "title": "Un truc",
-    "active": 0,
-    "type": "ods",
+    "active": 1,
+    "type": "md",
     "link": null,
-    "load": false,
-    "error": null,
-    "meta": {}
+    "error": "Remote resource: /truc/ not found",
+    "meta": {},
+    "load": false
   }
 ]
