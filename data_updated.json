@@ -3,24 +3,12 @@
     "order": 1,
     "id": "header",
     "title": null,
-    "active": 1,
+    "active": 0,
     "type": "md",
     "link": null,
+    "load": false,
     "error": null,
-    "meta": {
-      "src": {
-        "etag": "69263567897ad",
-        "lastmod": "Tue, 25 Nov 2025 23:01:59 GMT"
-      },
-      "src_sm": {
-        "etag": "69263632981a5",
-        "lastmod": "Tue, 25 Nov 2025 23:05:22 GMT"
-      }
-    },
-    "load": true,
-    "src": "header.69263567897ad.html",
-    "filetype": "html",
-    "src_sm": "header_sm.69263632981a5.html"
+    "meta": {}
   },
   {
     "order": 2,
@@ -37,19 +25,12 @@
     "order": 3,
     "id": "contact",
     "title": null,
-    "active": 1,
+    "active": 0,
     "type": "md",
     "link": null,
+    "load": false,
     "error": null,
-    "meta": {
-      "src": {
-        "etag": "68fff98287fd1",
-        "lastmod": "Mon, 27 Oct 2025 23:00:18 GMT"
-      }
-    },
-    "load": true,
-    "src": "contact.68fff98287fd1.html",
-    "filetype": "html"
+    "meta": {}
   },
   {
     "order": 4,
