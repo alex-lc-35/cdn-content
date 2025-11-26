@@ -26,24 +26,12 @@
     "order": 2,
     "id": "about",
     "title": "A propos",
-    "active": 1,
+    "active": 0,
     "type": "png",
     "link": null,
+    "load": false,
     "error": null,
-    "meta": {
-      "src": {
-        "etag": "68fcaa9a8756f",
-        "lastmod": "Wed, 30 Apr 2025 09:00:33 GMT"
-      },
-      "src_sm": {
-        "etag": "68f4b6c29015b",
-        "lastmod": "Wed, 30 Apr 2025 09:00:33 GMT"
-      }
-    },
-    "load": true,
-    "src": "about.68fcaa9a8756f.png",
-    "filetype": "png",
-    "src_sm": "about_sm.68f4b6c29015b.png"
+    "meta": {}
   },
   {
     "order": 3,
