@@ -12,6 +12,8 @@ def sync_active_params_data(client, download_dir):
     """
     print("\n🔍 Chargement des paramètres ...")
 
+    os.makedirs(download_dir, exist_ok=True)
+
     folder = "params/"
     files, error = list_folder(client, folder)
 
